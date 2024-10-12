@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from pathlib import Path
 
 import click
@@ -33,7 +34,7 @@ def greet(voices_dpath, voice_ext, frame_rate, annotation_dpath):
     model = VoskASR(MODELS_DPATH / "vosk-model-small-ru-0.22", frame_rate=frame_rate)
 
     recognized_data = []
-    for voice_dpath in tqdm(list(voices_dpath.glob(f"*.{voice_ext}"))[:20]):
+    for voice_dpath in tqdm(list(voices_dpath.glob(f"*.{voice_ext}"))):
         model.read_audio(voice_dpath)
         model.denoise_audio()
         recognized_text = model.recognize_audio()
@@ -52,9 +53,6 @@ def greet(voices_dpath, voice_ext, frame_rate, annotation_dpath):
         columns=["audio_filepath", "recognized_text", "pred_label", "pred_attribute"],
     )
 
-    output_path = DATA_DPATH / "results"
-    output_path.mkdir(parents=True, exist_ok=True)
-
     if annotations_df is not None:
         recognized_df = pd.merge(recognized_df, annotations_df, on="audio_filepath")
         recognized_df["WER"] = recognized_df.apply(
@@ -65,7 +63,15 @@ def greet(voices_dpath, voice_ext, frame_rate, annotation_dpath):
             axis=1,
         )
 
-    print(recognized_df)
+    output_path = DATA_DPATH / "results"
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    formatted_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+    recognized_df.to_csv(
+        output_path / f"voices_dpath_{formatted_datetime}.csv",
+        encoding="utf-8-sig",
+    )
 
 
 if __name__ == "__main__":
