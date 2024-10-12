@@ -1,0 +1,79 @@
+default_stages: [commit, push]
+# Fast fail - drop when first error appears
+# Used with nbstripout to restart right after cleaning
+# Because notebooks after cleaning are not indexed, we need to restart commit
+fail_fast: true
+
+repos:
+  # Use this first to fail (clean) on the first step
+  #   and restart right after that
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.7.1
+    hooks:
+      - id: nbstripout
+
+  # List of all hooks: https://pre-commit.com/hooks.html
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: end-of-file-fixer
+        exclude: LICENSE
+      - id: trailing-whitespace
+        exclude: ^exports/
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: check-merge-conflict
+      - id: check-ast
+      - id: check-executables-have-shebangs
+      - id: debug-statements
+      - id: check-added-large-files
+        args: ["--maxkb=100"]
+        exclude: |
+          (?x)^(
+            ^exports/|
+            ^poetry.lock
+          )$
+      - id: check-docstring-first
+      - id: detect-private-key
+      - id: check-case-conflict
+
+  - repo: local
+    # Use local tools to have same versions as you use in environment
+    # E.g. you use formatter to format during development
+    #   and pre-commit can behave in a different way without local version
+    hooks:
+
+      # Source: https://github.com/PyCQA/isort/blob/main/.pre-commit-hooks.yaml
+      - id: isort
+        name: isort
+        entry: poetry run isort --settings-path pyproject.toml
+        types: [python]
+        language: system
+
+      # Source: https://github.com/PyCQA/flake8/blob/main/.pre-commit-hooks.yaml
+      - id: flake8
+        name: flake8
+        entry: poetry run flake8
+        types_or: [python, pyi]
+        language: system
+
+
+      # Run black formatter
+      - id: black
+        name: black
+        entry: poetry run black
+        language: system
+        types_or: [python, pyi, jupyter]
+
+
+
+
+      - id: git-commit-prefix
+        name: git-commit-prefix
+        entry: poetry run python .additional/github_commit_prefix.py
+        language: python
+        stages: [prepare-commit-msg]
+        description: Searches the branch name for something looking like an issue name template and prepends the commit message with it

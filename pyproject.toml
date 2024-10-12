@@ -1,0 +1,110 @@
+# Poetry pyproject.toml: https://python-poetry.org/docs/pyproject/
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "SZFO-2024-solution"
+version = "0.1.0"
+description = "Awesome `szfo-2024-solution` project!"
+readme = "README.md"
+authors = ["Awesome user <awesome-user@example.com>"]
+repository = "https://github.com/Awesome-user/SZFO-2024-solution/"
+homepage = "https://github.com/Awesome-user/SZFO-2024-solution/"
+
+# Keywords description https://python-poetry.org/docs/pyproject/#keywords
+keywords = []  #! Update me
+
+# Pypi classifiers: https://pypi.org/classifiers/
+classifiers = [  #! Update me
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Programming Language :: Python :: 3",
+]
+
+
+
+
+
+[tool.poetry.dependencies]
+python = "~3.10.0"
+typer = {extras = ["all"], version = "^0.9.0"}
+rich = "^10.7.0"
+python-dotenv = "^0.21.1"
+
+[tool.poetry.group.dev.dependencies]
+# In case of packages without patch part we just want to update them through minor versions
+
+flake8 = "^7.1"
+black = {version = "^24.8", allow-prereleases = true}
+isort = {extras = ["colors"], version = "^5.10"}
+
+
+pre-commit = "^2.14"
+
+nbdime = "^3.1.0"
+envyaml = "^1.9.210927"
+ipykernel = "^6.4.2"
+jupyter = "^1.0.0"
+jupyter_contrib_nbextensions = "^0.5.1"
+jupyter-client = "==6.1.12"
+nbconvert = "5.6.1"
+jinja2 = "3.0.3"
+
+
+
+
+[tool.black]
+# https://github.com/psf/black
+target-version = ["py310"]
+line-length = 88
+color = true
+
+exclude = '''
+/(
+    \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | env
+    | venv
+)/
+'''
+
+
+[tool.isort]
+# https://github.com/timothycrosley/isort/
+py_version = 310
+line_length = 88
+
+known_typing = ["typing", "types", "typing_extensions", "mypy", "mypy_extensions"]
+sections = ["FUTURE", "TYPING", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+include_trailing_comma = true
+profile = "black"
+multi_line_output = 3
+indent = 4
+color_output = true
+
+
+
+
+[tool.pytest.ini_options]
+# https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
+# Directories that are not visited by pytest collector:
+norecursedirs =["hooks", "*.egg", ".eggs", "dist", "build", "docs", ".tox", ".git", "__pycache__"]
+doctest_optionflags = ["NUMBER", "NORMALIZE_WHITESPACE", "IGNORE_EXCEPTION_DETAIL"]
+
+# Extra options:
+addopts = [
+  "--strict-markers",
+  "--tb=short",
+  "--doctest-modules",
+  "--doctest-continue-on-failure",
+]

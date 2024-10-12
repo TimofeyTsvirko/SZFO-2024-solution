@@ -1,0 +1,21 @@
+# This file contains values from Cookiecutter
+
+default_context:
+  project_name: "SZFO-2024-solution"
+  project_slug: "szfo_2024_solution"
+  project_description: "Awesome `szfo-2024-solution` project!"
+  username: "Awesome user"
+  email: "awesome-user@example.com"
+  vcs_remote_type: "github"
+  minimal_python_version: "3.10"
+  version: "0.1.0"
+  line_length: "88"
+
+  python_linter: "flake8"
+  python_formatter: "black"
+
+  include_mypy_type_checker: "n"
+  include_cli_example: "n"
+  include_docker_sample: "n"
+  include_tests_sample: "n"
+  include_notebooks_sample: "y"
