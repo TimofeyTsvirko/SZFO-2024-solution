@@ -29,6 +29,9 @@ poetry-export-dev:
 tools-install:
 	poetry run pre-commit install --hook-type prepare-commit-msg --hook-type pre-commit
 	poetry run nbdime config-git --enable
+	sudo apt-get install autoconf libtool
+	chmod u+x szfo_2024_solution/RNNoise_Wrapper/compile_rnnoise.sh
+	cd szfo_2024_solution/RNNoise_Wrapper && ./compile_rnnoise.sh
 
 .PHONY: pre-commit-update
 pre-commit-update:
