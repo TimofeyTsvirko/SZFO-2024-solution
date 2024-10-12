@@ -34,7 +34,8 @@ repos:
         exclude: |
           (?x)^(
             ^exports/|
-            ^poetry.lock
+            ^poetry.lock|
+            ^.*\.wav$
           )$
       - id: check-docstring-first
       - id: detect-private-key
