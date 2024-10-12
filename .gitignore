@@ -621,3 +621,5 @@ MigrationBackup/
 
 # Ignore .env file
 .env
+
+/models
