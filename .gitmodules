@@ -1,0 +1,3 @@
+[submodule "szfo_2024_solution/RNNoise_Wrapper"]
+	path = szfo_2024_solution/RNNoise_Wrapper
+	url = https://github.com/dbklim/RNNoise_Wrapper.git
