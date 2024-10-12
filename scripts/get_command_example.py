@@ -1,8 +1,10 @@
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
+import psutil
 from rnnoise_wrapper import RNNoise
 from vosk import KaldiRecognizer, Model
 
@@ -19,6 +21,12 @@ model = Model(str(model_path))
 denoiser = RNNoise()
 
 audio = denoiser.read_wav(DATA_DPATH / "voice" / "test.wav")
+
+# latency and peak RAM usage
+process = psutil.Process(os.getpid())
+peak_memory = process.memory_info().rss
+start_time = time.time()
+
 denoised_audio = denoiser.filter(audio)
 
 recognizer = KaldiRecognizer(model, denoised_audio.frame_rate)
@@ -36,6 +44,13 @@ for start in range(0, len(denoised_audio), chunk_size):
         result = recognizer.Result()
         transcription += json.loads(result)["text"] + " "
 
+    peak_memory = max(peak_memory, process.memory_info().rss)
+
 transcription += json.loads(recognizer.FinalResult())["text"]
 
+end_time = time.time()
+latency = end_time - start_time
+
 print("Transcription:", transcription)
+print("Latency:", latency, "seconds")
+print("Peak RAM Usage:", peak_memory / (1024 * 1024), "MB")  # Convert bytes to MB
