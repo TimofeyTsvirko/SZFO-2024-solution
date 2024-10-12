@@ -53,4 +53,4 @@ latency = end_time - start_time
 
 print("Transcription:", transcription)
 print("Latency:", latency, "seconds")
-print("Peak RAM Usage:", peak_memory / (1024 * 1024), "MB")  # Convert bytes to MB
+print("Peak RAM Usage:", peak_memory / (1024 * 1024), "MB")
