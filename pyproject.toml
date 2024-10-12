@@ -33,6 +33,7 @@ python = "~3.10.0"
 typer = {extras = ["all"], version = "^0.9.0"}
 rich = "^10.7.0"
 python-dotenv = "^0.21.1"
+rnnoise-wrapper = {git = "https://github.com/Desklop/RNNoise_Wrapper.git"}
 
 [tool.poetry.group.dev.dependencies]
 # In case of packages without patch part we just want to update them through minor versions
