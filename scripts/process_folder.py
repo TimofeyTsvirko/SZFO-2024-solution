@@ -26,7 +26,8 @@ MODELS_DPATH = PROJECT_DPATH / "models"
 @click.option("--voice-ext", default="wav", help="Voices' files extension (mp3, wav).")
 @click.option("--frame-rate", default=16000, help="Files framerate (16k, 48k).")
 @click.option("--annotation-dpath", help="Annotation (json) filepath.")
-def greet(voices_dpath, voice_ext, frame_rate, annotation_dpath):
+@click.option("--to-json", is_flag=True, help="Save results to json.")
+def greet(voices_dpath, voice_ext, frame_rate, annotation_dpath, to_json):
     voices_dpath = Path(voices_dpath)
 
     annotations_df = None
@@ -43,6 +44,8 @@ def greet(voices_dpath, voice_ext, frame_rate, annotation_dpath):
     latency_list = []
     process = psutil.Process(os.getpid())
     peak_memory = process.memory_info().rss
+
+    json_data = []
 
     for voice_dpath in tqdm(list(voices_dpath.glob(f"*.{voice_ext}"))):
         model.read_audio(voice_dpath)
@@ -67,6 +70,9 @@ def greet(voices_dpath, voice_ext, frame_rate, annotation_dpath):
         latency_list.append(latency)
 
         peak_memory = max(peak_memory, process.memory_info().rss)
+
+        if to_json:
+            json_data.append(model.get_submission_result)
 
     recognized_df = pd.DataFrame(
         recognized_data,
@@ -97,11 +103,16 @@ def greet(voices_dpath, voice_ext, frame_rate, annotation_dpath):
     output_path.mkdir(parents=True, exist_ok=True)
 
     formatted_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    output_name = f"voices_dpath_{formatted_datetime}"
 
-    recognized_df.to_csv(
-        output_path / f"voices_dpath_{formatted_datetime}.csv",
-        encoding="utf-8-sig",
-    )
+    if to_json:
+        with open(output_path / f"{output_name}.json", "w") as f:
+            json.dump(json_data, f)
+    else:
+        recognized_df.to_csv(
+            output_path / f"{output_name}.csv",
+            encoding="utf-8-sig",
+        )
 
 
 if __name__ == "__main__":
