@@ -26,6 +26,7 @@ class VoskASR:
 
     def read_audio(self, audio_path: Path) -> None:
         self.audio = self.denoiser.read_wav(audio_path)
+        self.audio_name = audio_path.name
 
     def denoise_audio(self) -> None:
         self.audio = self.denoiser.filter(self.audio)
@@ -104,6 +105,15 @@ class VoskASR:
         if total == 0:
             return -1
         return total
+
+    @property
+    def get_submission_result(self):
+        return {
+            "audio": self.audio_name,
+            "text": self.transcription,
+            "label": self.label,
+            "attribute": self.attribute,
+        }
 
 
 class MetricsCalculator:
