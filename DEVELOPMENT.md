@@ -107,3 +107,18 @@ make project-init
     Check version of your `python3` binary and make sure you have python3.10 installed.
 
 [Table of contents](#table-of-contents)
+
+- If you have the following issue:
+```bash
+Traceback (most recent call last):
+  File "/.../SZFO-2024-solution/scripts/process_folder.py", line 13, in <module>
+    from szfo_2024_solution.voice2text import MetricsCalculator, VoskASR
+ModuleNotFoundError: No module named 'szfo_2024_solution'
+```
+
+Run in the terminal:
+```bash
+export PYTHONPATH="/your_dir_here/SZFO-2024-solution:$PYTHONPATH"
+```
+
+And run the script again
