@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import sys
 from pathlib import Path
 
@@ -21,6 +22,7 @@ class VoskASR:
         self.denoiser = RNNoise()
         self.chunk_size = chunk_size
         self.morph = pymorphy2.MorphAnalyzer()
+        self.labels_with_attr = [4, 10]
 
     def read_audio(self, audio_path: Path) -> None:
         self.audio = self.denoiser.read_wav(audio_path)
@@ -43,6 +45,8 @@ class VoskASR:
 
         transcription += json.loads(self.recognizer.FinalResult())["text"]
         self.transcription = transcription
+        self.attribute = self.text_to_number(transcription)
+        self.label = self.predict_label_from_text(self.transcription)
         return transcription
 
     @property
@@ -51,14 +55,14 @@ class VoskASR:
 
     @property
     def get_pred_label(self):
-        # self.label = self.predict_label_from_text(self.transcription)
-        self.label = 4
+        if self.label not in self.labels_with_attr and self.attribute != -1:
+            self.label = random.choice(self.labels_with_attr)
         return self.label
 
     @property
     def get_pred_attr(self):
-        if self.label in [4, 10]:
-            return self.text_to_number(self.transcription)
+        if self.label in self.labels_with_attr:
+            return self.attribute
         else:
             return -1
 
@@ -97,6 +101,8 @@ class VoskASR:
             else:
                 pass
         total += current
+        if total == 0:
+            return -1
         return total
 
 
