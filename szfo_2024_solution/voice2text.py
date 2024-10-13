@@ -7,6 +7,7 @@ from pathlib import Path
 import nltk
 import pymorphy2
 from rnnoise_wrapper import RNNoise
+from sklearn.metrics import f1_score
 from vosk import KaldiRecognizer, Model
 
 from .label2id import Numbers, _id2label, _label2id
@@ -68,12 +69,7 @@ class VoskASR:
             return -1
 
     def predict_label_from_text(self, text):
-        pred_id = None
-        try:
-            pred_id = self.label2id(text)
-        except KeyError:
-            pred_id = -1
-        return pred_id
+        return self.find_best_match(text)
 
     @staticmethod
     def label2id(label: str) -> int:
@@ -115,6 +111,44 @@ class VoskASR:
             "attribute": self.attribute,
         }
 
+    @staticmethod
+    def find_best_match(text):
+        text = text.lower()
+
+        scores = {}
+        for phrase, id in _label2id.items():
+            phrase_words = phrase.split()
+            presence = [1 if word in text else 0 for word in phrase_words]
+
+            average_score = sum(presence) / len(phrase_words)
+
+            if average_score not in scores:
+                scores[average_score] = []
+            scores[average_score].append((phrase, id, len(phrase_words)))
+
+        # Сортировка по убыванию среднего значения, затем по количеству слов
+        sorted_scores = sorted(
+            scores.items(),
+            key=lambda x: (
+                -x[0],
+                -max(len(item[0]) for item in x[1]),
+            ),
+        )
+
+        # Выбор случайного варианта при дубликатах
+        best_matches = []
+        for avg_score, phrases in sorted_scores:
+            if not best_matches or best_matches[0][0] == avg_score:
+                best_matches.extend(phrases)
+            else:
+                break
+
+        # Возвращаем случайный вариант из лучших совпадений
+        if best_matches:
+            return random.choice(best_matches)[1]
+        else:
+            return random.choice(range(len(_label2id.items())))
+
 
 class MetricsCalculator:
     def __init__(self):
@@ -125,3 +159,6 @@ class MetricsCalculator:
         pred_words = pred.split()
         matcher = nltk.edit_distance(test_words, pred_words)
         return matcher / len(test_words)
+
+    def f1_w(test, pred):
+        return f1_score(test, pred, average="weighted")
