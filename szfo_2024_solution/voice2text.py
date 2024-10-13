@@ -4,10 +4,11 @@ import sys
 from pathlib import Path
 
 import nltk
+import pymorphy2
 from rnnoise_wrapper import RNNoise
 from vosk import KaldiRecognizer, Model
 
-from .label2id import _id2label, _label2id
+from .label2id import Numbers, _id2label, _label2id
 
 
 class VoskASR:
@@ -19,6 +20,7 @@ class VoskASR:
         self.recognizer = KaldiRecognizer(model, frame_rate)
         self.denoiser = RNNoise()
         self.chunk_size = chunk_size
+        self.morph = pymorphy2.MorphAnalyzer()
 
     def read_audio(self, audio_path: Path) -> None:
         self.audio = self.denoiser.read_wav(audio_path)
@@ -49,11 +51,16 @@ class VoskASR:
 
     @property
     def get_pred_label(self):
-        return self.predict_label_from_text(self.transcription)
+        # self.label = self.predict_label_from_text(self.transcription)
+        self.label = 4
+        return self.label
 
     @property
     def get_pred_attr(self):
-        return -1
+        if self.label in [4, 10]:
+            return self.text_to_number(self.transcription)
+        else:
+            return -1
 
     def predict_label_from_text(self, text):
         pred_id = None
@@ -70,6 +77,27 @@ class VoskASR:
     @staticmethod
     def id2label(id: int) -> str:
         return _id2label[id]
+
+    def text_to_number(self, text):
+        words = text.lower().split()
+        total = 0
+        current = 0
+
+        for word in words:
+            parsed = self.morph.parse(word)[0]
+            lemma = parsed.normal_form
+
+            if lemma in Numbers.units:
+                current += Numbers.units[lemma]
+            elif lemma in Numbers.tens:
+                current += Numbers.tens[lemma]
+            elif lemma in Numbers.hundreds:
+                current += Numbers.hundreds[lemma]
+                current = 0
+            else:
+                pass
+        total += current
+        return total
 
 
 class MetricsCalculator:

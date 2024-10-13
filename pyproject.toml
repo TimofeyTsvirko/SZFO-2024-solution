@@ -37,6 +37,7 @@ rnnoise-wrapper = {git = "https://github.com/Desklop/RNNoise_Wrapper.git"}
 vosk = "^0.3.45"
 pandas = "^2.2.3"
 nltk = "^3.9.1"
+pymorphy2 = "^0.9.1"
 
 [tool.poetry.group.dev.dependencies]
 # In case of packages without patch part we just want to update them through minor versions
