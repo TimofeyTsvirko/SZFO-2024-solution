@@ -47,3 +47,10 @@ Awesome `szfo-2024-solution` project!
 ## Other interesting info
 
 Here you can write anything about your project!
+
+# Get submission
+
+To get submission results you need to build the project (DEVELOPMENT.md) and run:
+```bash
+python scripts/get_submission.py --src ... --dst ...
+```
