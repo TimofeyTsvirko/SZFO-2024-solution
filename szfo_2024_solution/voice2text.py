@@ -143,6 +143,12 @@ class VoskASR:
             else:
                 break
 
+        if best_matches:
+            max_length = max(len(item[0].split()) for item in best_matches)
+            best_matches = [
+                item for item in best_matches if len(item[0].split()) == max_length
+            ]  # noqa: E501
+
         # Возвращаем случайный вариант из лучших совпадений
         if best_matches:
             return random.choice(best_matches)[1]
