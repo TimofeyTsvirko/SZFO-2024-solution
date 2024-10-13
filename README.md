@@ -54,3 +54,18 @@ To get submission results you need to build the project (DEVELOPMENT.md) and run
 ```bash
 python scripts/get_submission.py --src ... --dst ...
 ```
+
+- If you have the following issue:
+```bash
+Traceback (most recent call last):
+  File "/.../SZFO-2024-solution/scripts/process_folder.py", line 13, in <module>
+    from szfo_2024_solution.voice2text import MetricsCalculator, VoskASR
+ModuleNotFoundError: No module named 'szfo_2024_solution'
+```
+
+Run in the terminal:
+```bash
+export PYTHONPATH="/your_dir_here/SZFO-2024-solution:$PYTHONPATH"
+```
+
+And run the script again
